@@ -38,7 +38,11 @@ cd DahuaCloudOpenCLI/dahua-cloud-ai-cli
 # 安装依赖
 pip install -r requirements.txt
 
+# 安装程序
+根据平台执行不同的安装脚本，脚本路径：scripts
+
 # 配置密钥（大华云 Product ID、AppKey、AppSecret）
+
 # 查看使用帮助
 dahua-cloud --help
 ```
