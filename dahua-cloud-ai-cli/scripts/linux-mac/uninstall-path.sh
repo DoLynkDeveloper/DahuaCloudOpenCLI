@@ -1,19 +1,22 @@
-#!/usr/bin/env bash
-# Linux/Mac PATH 卸载脚本
+#!/bin/sh
+# Linux/Mac PATH 卸载脚本 (POSIX sh 兼容)
 # 将 CLI 所在目录从 PATH 中移除
 
-CLI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# 获取脚本所在目录（兼容 POSIX sh）
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CLI_DIR="$SCRIPT_DIR"
 SHELL_NAME=$(basename "$SHELL")
 
 echo "[INFO] 准备从 PATH 中移除以下目录:"
 echo "$CLI_DIR"
 echo ""
 
-# 检测当前 shell 配置文件
-if [[ "$SHELL_NAME" == "zsh" ]]; then
+# 检测当前 shell 配置文件（使用 POSIX 兼容的单括号 [ ）
+if [ "$SHELL_NAME" = "zsh" ]; then
     CONFIG_FILE="$HOME/.zshrc"
-elif [[ "$SHELL_NAME" == "bash" ]]; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
+elif [ "$SHELL_NAME" = "bash" ]; then
+    # 检测 macOS
+    if [ "$(uname -s)" = "Darwin" ]; then
         CONFIG_FILE="$HOME/.bash_profile"
     else
         CONFIG_FILE="$HOME/.bashrc"
@@ -23,7 +26,7 @@ else
 fi
 
 # 检查配置文件是否存在
-if [[ ! -f "$CONFIG_FILE" ]]; then
+if [ ! -f "$CONFIG_FILE" ]; then
     echo "[INFO] 配置文件 $CONFIG_FILE 不存在，无需移除"
     exit 0
 fi
