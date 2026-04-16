@@ -1000,9 +1000,16 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         """自定义 USAGE 格式"""
         if prefix is None:
             prefix = 'USAGE:'
-        # 简化程序名显示
-        prog_name = 'dahua-cloud'
-        return f'\n{prefix}\n  {prog_name} <command> <subcommand> [flags]\n'
+        # 根据 prog 层级智能生成 usage
+        # prog 形如 "dahua-cloud-ai-cli.py" 或 "dahua-cloud-ai-cli.py image"
+        parts = self._prog.split()
+        if len(parts) > 1:
+            # 子命令级别: dahua-cloud image <subcommand> [flags]
+            subcommand = parts[-1]
+            return f'\n{prefix}\n  dahua-cloud {subcommand} <subcommand> [flags]\n'
+        else:
+            # 顶级: dahua-cloud <command> <subcommand> [flags]
+            return f'\n{prefix}\n  dahua-cloud <command> <subcommand> [flags]\n'
     
     def _format_action(self, action):
         if isinstance(action, argparse._SubParsersAction):
@@ -1015,8 +1022,9 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         parts.append('COMMANDS:')
         parts.append('')
         
-        for name, subparser in action.choices.items():
-            description = subparser.description or ''
+        for choice_action in action._choices_actions:
+            name = choice_action.dest
+            description = choice_action.help or ''
             parts.append(f'  {name:<15} {description}')
         parts.append('')
         return '\n'.join(parts)
@@ -1039,7 +1047,7 @@ def main():
     parser.add_argument('--no-json', action='store_false', dest='json', default=True,
                        help='以人类可读格式输出结果（默认）')
 
-    subparsers = parser.add_subparsers(dest='category', title='', metavar='')
+    subparsers = parser.add_subparsers(dest='category', title=argparse.SUPPRESS, metavar='')
 
     # 创建父解析器用于共享参数
     parent_parser = argparse.ArgumentParser(add_help=False)
@@ -1053,8 +1061,12 @@ def main():
     # 图片理解命令组
     # =========================================================================
     image_parser = subparsers.add_parser('image', description='图片理解相关 API',
-                                        help='图片理解相关 API')
-    image_subparsers = image_parser.add_subparsers(dest='action', title='', metavar='')
+                                        help='图片理解相关 API',
+                                        formatter_class=CustomHelpFormatter,
+                                        add_help=False)
+    image_parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                              help='显示帮助信息')
+    image_subparsers = image_parser.add_subparsers(dest='action', title=argparse.SUPPRESS, metavar='')
 
     # 单图分析
     img_analysis = image_subparsers.add_parser('analysis', help='单图分析', parents=[parent_parser])
@@ -1085,8 +1097,12 @@ def main():
     # 文本理解命令组
     # =========================================================================
     text_parser = subparsers.add_parser('text', description='文本理解相关 API',
-                                       help='文本理解相关 API')
-    text_subparsers = text_parser.add_subparsers(dest='action', title='', metavar='')
+                                       help='文本理解相关 API',
+                                       formatter_class=CustomHelpFormatter,
+                                       add_help=False)
+    text_parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                             help='显示帮助信息')
+    text_subparsers = text_parser.add_subparsers(dest='action', title=argparse.SUPPRESS, metavar='')
 
     # 文本分析
     txt_analysis = text_subparsers.add_parser('analysis', help='文本分析', parents=[parent_parser])
@@ -1109,8 +1125,12 @@ def main():
     # 视频理解命令组
     # =========================================================================
     video_parser = subparsers.add_parser('video', description='视频理解相关 API',
-                                        help='视频理解相关 API')
-    video_subparsers = video_parser.add_subparsers(dest='action', title='', metavar='')
+                                        help='视频理解相关 API',
+                                        formatter_class=CustomHelpFormatter,
+                                        add_help=False)
+    video_parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                              help='显示帮助信息')
+    video_subparsers = video_parser.add_subparsers(dest='action', title=argparse.SUPPRESS, metavar='')
 
     # 视频分析
     vid_analysis = video_subparsers.add_parser('analysis', help='视频分析', parents=[parent_parser])
@@ -1123,8 +1143,12 @@ def main():
     # 音频理解命令组
     # =========================================================================
     audio_parser = subparsers.add_parser('audio', description='音频理解相关 API',
-                                        help='音频理解相关 API')
-    audio_subparsers = audio_parser.add_subparsers(dest='action', title='', metavar='')
+                                        help='音频理解相关 API',
+                                        formatter_class=CustomHelpFormatter,
+                                        add_help=False)
+    audio_parser.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
+                              help='显示帮助信息')
+    audio_subparsers = audio_parser.add_subparsers(dest='action', title=argparse.SUPPRESS, metavar='')
 
     # 语音转文字
     aud_transcribe = audio_subparsers.add_parser('transcribe', help='语音转文字', parents=[parent_parser])
