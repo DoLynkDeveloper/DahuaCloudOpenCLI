@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 # Linux/Mac 直接调用入口
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# 兼容不同 shell 环境获取脚本所在目录
+if [ -n "$BASH_SOURCE" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+elif [ -n "$ZSH_VERSION" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+else
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+
 python "${SCRIPT_DIR}/../../src/dahua-cloud-ai-cli.py" "$@"
 
