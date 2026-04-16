@@ -1,0 +1,6 @@
+# 大华云大模型推理套件 CLI 依赖
+# Python 版本要求: >= 3.8
+# 安装: pip install -r requirements.txt
+
+# HTTP 请求库
+requests>=2.25.0
