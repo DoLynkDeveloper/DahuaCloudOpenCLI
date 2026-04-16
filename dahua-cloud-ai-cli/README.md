@@ -7,16 +7,19 @@
 ```
 dahua-cloud-ai-cli/
 ├── src/
-│   └── dahua-cloud-ai-cli.py  # 主程序
+│   └── dahua-cloud-ai-cli.py    # 主程序
 ├── scripts/
 │   ├── windows/
-│   │   ├── dahua-cloud.cmd    # Windows CMD 入口
+│   │   ├── dahua-cloud.cmd      # Windows CMD 入口
 │   │   ├── dahua-cloud-ai-cli.ps1  # Windows PowerShell 入口
-│   │   └── install-path.bat   # Windows PATH 安装
+│   │   ├── install-path.bat     # Windows PATH 安装
+│   │   └── uninstall-path.bat   # Windows PATH 卸载
 │   └── linux-mac/
-│       ├── dahua-cloud.sh     # Linux/Mac 入口
-│       └── install-path.sh    # Linux/Mac PATH 安装
-└── README.md                  # 本文件
+│       ├── dahua-cloud          # Linux/Mac 入口
+│       ├── install-path.sh      # Linux/Mac PATH 安装
+│       └── uninstall-path.sh    # Linux/Mac PATH 卸载
+├── requirements.txt             # Python 依赖
+└── README.md                    # 本文件
 ```
 
 ## 安装与配置
@@ -101,6 +104,23 @@ dahua-cloud --help
 dahua-cloud doctor
 ```
 
+### 6. 卸载 CLI
+
+如需从 PATH 中移除 CLI：
+
+**Windows：**
+```cmd
+scripts\windows\uninstall-path.bat
+```
+
+**Linux/Mac：**
+```bash
+chmod +x scripts/linux-mac/uninstall-path.sh
+./scripts/linux-mac/uninstall-path.sh
+source ~/.bashrc  # 或 ~/.zshrc
+```
+
+卸载脚本会自动备份配置文件（Linux/Mac），并提示重新打开终端使更改生效。
 
 ## 使用说明
 
@@ -153,7 +173,7 @@ scripts\windows\dahua-cloud.cmd image analysis "URL" "描述"
 .\scripts\windows\dahua-cloud-ai-cli.ps1 image analysis "URL" "描述"
 
 # Linux/Mac 入口脚本
-./scripts/linux-mac/dahua-cloud.sh image analysis "URL" "描述"
+./scripts/linux-mac/dahua-cloud image analysis "URL" "描述"
 ```
 
 ## 在 AI IDE 中使用
@@ -173,8 +193,8 @@ AI IDE 可通过调用 `dahua-cloud` 命令来使用大华云 AI 能力。
       "scripts": {
         "windows": "scripts/windows/dahua-cloud.cmd",
         "powershell": "scripts/windows/dahua-cloud-ai-cli.ps1",
-        "linux": "scripts/linux-mac/dahua-cloud.sh",
-        "mac": "scripts/linux-mac/dahua-cloud.sh"
+        "linux": "scripts/linux-mac/dahua-cloud",
+        "mac": "scripts/linux-mac/dahua-cloud"
       },
       "description": "大华云大模型推理套件 CLI，支持图片、文本、视频、音频等多种 AI 能力"
     }
