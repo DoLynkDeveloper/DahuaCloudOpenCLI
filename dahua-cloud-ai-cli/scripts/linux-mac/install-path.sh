@@ -21,16 +21,41 @@ else
     CONFIG_FILE="$HOME/.profile"
 fi
 
-# 检查是否已存在
-if grep -q "$CLI_DIR" "$CONFIG_FILE" 2>/dev/null; then
-    echo "[INFO] 目录已在 PATH 中，无需添加"
-else
-    # 添加到配置文件
-    echo "" >> "$CONFIG_FILE"
-    echo "# dahua-cloud CLI" >> "$CONFIG_FILE"
-    echo "export PATH=\"\$PATH:$CLI_DIR\"" >> "$CONFIG_FILE"
-    echo "[SUCCESS] 已成功添加到 $CONFIG_FILE"
+# 检查是否已安装在当前路径
+if grep -qF "$CLI_DIR" "$CONFIG_FILE" 2>/dev/null; then
+    echo "[INFO] dahua-cloud CLI 已安装在此路径，无需重新安装:"
+    echo "  $CLI_DIR"
+    exit 0
 fi
+
+# 检查是否已安装在其他路径
+if grep -q "dahua-cloud" "$CONFIG_FILE" 2>/dev/null; then
+    echo "[WARNING] 检测到 dahua-cloud CLI 已安装在其他路径"
+    echo ""
+    read -p "是否覆盖安装? (y/N): " OVERWRITE
+    if [[ ! "$OVERWRITE" =~ ^[Yy]$ ]]; then
+        echo "[INFO] 已取消安装"
+        exit 0
+    fi
+    echo "[INFO] 正在移除旧条目..."
+    # 从配置文件中移除旧条目（包括注释行和 export 行）
+    TEMP_FILE=$(mktemp)
+    awk '
+        /# dahua-cloud CLI/ { skip=1; next }
+        skip && /export PATH=.*dahua-cloud/ { skip=0; next }
+        { skip=0; print }
+    ' "$CONFIG_FILE" > "$TEMP_FILE"
+    cp "$CONFIG_FILE" "$CONFIG_FILE.bak.$(date +%Y%m%d%H%M%S)"
+    mv "$TEMP_FILE" "$CONFIG_FILE"
+    echo "[INFO] 继续安装..."
+    echo ""
+fi
+
+# 添加到配置文件
+echo "" >> "$CONFIG_FILE"
+echo "# dahua-cloud CLI" >> "$CONFIG_FILE"
+echo "export PATH=\"\$PATH:$CLI_DIR\"" >> "$CONFIG_FILE"
+echo "[SUCCESS] 已成功添加到 $CONFIG_FILE"
 
 echo ""
 echo "请运行以下命令使配置生效:"
