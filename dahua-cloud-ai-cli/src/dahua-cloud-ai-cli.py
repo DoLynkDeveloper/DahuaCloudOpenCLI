@@ -39,7 +39,7 @@ EXAMPLES:
 For more information, visit: https://open.cloud-dahua.com/
 """
 
-__version__ = "1.0.3"
+__version__ = "1.0.0"
 
 import argparse
 import hashlib
